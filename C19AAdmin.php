@@ -50,9 +50,10 @@ function C19A_admin_menu() {
     	echo "<h1>Corona Ampel Einstellungen:</h1>";
 
         echo "<div>
-        <p>Besuchen bitte die folgende Seite und wähle dort den anzuzeigenden Landkreis aus.
+        <p>Besuche bitte die folgende Seite und wähle dort den anzuzeigenden Landkreis aus.
         <br><a href='https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0/data?geometry=-30.805%2C46.211%2C52.823%2C55.839&selectedAttribute=cases7_lk' target=_blank>RKI Dashboard Landkreise</a>
-        <br><p>Die OBJECTID aus der linken Spalte dann hier im untenstehenden Formular eintragen.</p>
+		<br><a href='https://github.com/RalphRathmann/WP-C19Ampel/blob/main/assets/RKI_Corona_Landkreise.pdf' target=_blank>RKI-OBJECTID Landkreise als PDF</a>
+        <br><p>Die OBJECTID aus der linken Spalte dann hier im untenstehenden Formular als Landkreis-ID eintragen.</p>
 		<h3>Einbettung:</h3>
 		<p>Das Plugin wird als Shortcode eingebunden:</p>
 		<p>[C19Ampel] - Mit Standardwerten einbinden</p>
