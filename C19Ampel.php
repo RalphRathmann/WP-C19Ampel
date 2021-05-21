@@ -6,7 +6,7 @@
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Text Domain: C19Ampel
-* Version: 0.15
+* Version: 0.16
 * License:     GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,7 +81,7 @@ function C19A_install_db(){
 }
 
 
-function render_Corona_Ampel(){
+function render_Corona_Ampel($showmode = 'all'){
 
 
     setlocale(LC_TIME, "de_DE");
@@ -92,12 +92,19 @@ function render_Corona_Ampel(){
 
 	$rki_objid = get_option( 'CA19LK_ID',9);	
 	
+	if(isset($_GET["landkreis"]) && is_numeric($_GET["landkreis"])){
+		$rki_objid = $_GET["landkreis"];
+	}
+	
 	if(current_user_can('administrator')){
-		if(isset($_GET["landkreis"]) && is_numeric($_GET["landkreis"])){
-			$rki_objid = $_GET["landkreis"];
+		//DEBUG:
+		//
+		$html.= $showmode;
+		if(isset($showmode) && is_numeric($showmode) && $showmode > 1){
+			
 		}
 	}
-
+	
 
 	$grenzwert1 = get_option( 'CA19LK_grenzwert1',100 );
 	$grenzwert2 = get_option( 'CA19LK_grenzwert2',165 );
@@ -111,33 +118,30 @@ function render_Corona_Ampel(){
 	$aVerlauf = C19A_get_incidencesof_past($rki_objid,5);
 	$tendenz_img = c19a_render_tendenz($aVerlauf,$aRKIdaten[0]['cases7_per_100k'],C19A_STYLE_TENDENZ_IMG_ONLY);
 	
-	
 
-    $html.= "<div id='C19Abox' style='display: block; float: left; width: 100%;'>";
+	$html.= "<div id='C19Abox'>";
 
-    
     $html.= "<h3>Inzidenz-Ampel " . $aRKIdaten[0]['BEZ'] . " " . $aRKIdaten[0]['GEN'] . "</h3>";
-    //$html.= "<p>für " . strftime("%A %e.%m.%Y", $aRKIdaten[0]['timestamp']) . "</p>";    
 	$html.= "<p>für den " . date("d.m.Y") . "</p>";    
 
-    $html.= "<div class='C19Aframe' style='float: left;'>";
+    $html.= "<div class='C19Aframe'>";
     $html.= render_tages_Ampel($aRKIdaten[0]['cases7_per_100k'], $grenzwert1,$grenzwert2);
 	$html.= "</div>";
 	
-	$html.= "<div class='C19Aframe' style='float: left; margin: 2em;'>";
+	$html.= "<div id='C19Atendenz' class='C19Aframe'>";
 		$html.= "<br><small>Tendenz:</small><br>$tendenz_img";	
 	$html.= "</div>";
 
-    $html.= "<div id='C19Adetailbox' style='display: block; float: left; text-align: left; padding: 1rem;'>";    
+    $html.= "<div id='C19Adetailbox'>";    
 	
 //    $html.= "<h4>" . $aRKIdaten[0]['GEN'] . ":</h4>";    
-    $html.= "<p> 7 Tages-Inzidenz: <strong>" . round($aRKIdaten[0]['cases7_per_100k'],2) . 
+    $html.= "<p> 7 Tages-Inzidenz: <strong>" . number_format($aRKIdaten[0]['cases7_per_100k'],2,',','') . 
     "</strong><br><small>Fälle: " . $aRKIdaten[0]['cases7_lk'] . " (" . $aRKIdaten[0]['death7_lk'] . ")</small>
     </p>";
 
 
     $html.= "<h4>Gesamtes Bundesland " . $aRKIdaten[0]['BL'] . ":</h4>
-    <p>7 Tages-Inzidenz: <strong>" . round($aRKIdaten[0]['cases7_bl_per_100k'],2) . 
+    <p>7 Tages-Inzidenz: <strong>" . number_format($aRKIdaten[0]['cases7_bl_per_100k'],2,',','') . 
     "</strong><br>
     <small>Fälle: " . $aRKIdaten[0]['cases'] . " (<small>" . $aRKIdaten[0]['deaths'] . ")</small>
     </p>";
@@ -145,9 +149,16 @@ function render_Corona_Ampel(){
 
 	
 
-		$html.= "<br>Verlauf letzte 5 Tage:<br>";
-		$svg_width = 450;
+		$html.= "<br>Verlauf letzte 6 Tage:<br>";
+		$svg_width = 400;
+	
 		$svg_height = 200;
+		$highest_incidence = max(array_column($aVerlauf,"incidence"));
+		if($highest_incidence > $svg_height) {$svg_height = round($highest_incidence + 20);}
+		if($grenzwert2 > $svg_height){$svg_height = round($highest_incidence + 20);}
+		$svg_text_y = $svg_height - 5;
+	
+		
 		$svg_grenzwert35 = $svg_height - 35;	//scaled: intval($svg_height - ($svg_height * 35 / 100));
 		$svg_grenzwert50 = $svg_height - 50;
 		$svg_grenzwert1 = $svg_height - $grenzwert1;
@@ -167,11 +178,9 @@ function render_Corona_Ampel(){
 		
 		
 		for($iic = 5;$iic >=0 ;$iic--){
-			$svg_text_pos = 385 - ($iic * 72);
-			$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='190'>" . date("d.m", time() - $seconds_a_day * $iic) . " </text>";	
+			$svg_text_pos = $svg_width - 35 - ($iic * 65);
+			$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='$svg_text_y'>" . date("d.m", time() - $seconds_a_day * $iic) . " </text>";	
 			if(isset($aVerlauf[$iic]["incidence"])){
-				//if(is_numeric())
-				
 				$this_y_pos = $svg_height - intval($aVerlauf[$iic]["incidence"]);
 				$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='" . $this_y_pos . "'>" . round($aVerlauf[$iic]["incidence"]) . " </text>";	
 				$html.= "<rect x='$svg_text_pos' y='$this_y_pos' rx='1' ry='1' width='25' height='$svg_height' style='fill:red;stroke:black;stroke-width:1;opacity:0.4' />";
@@ -183,10 +192,10 @@ function render_Corona_Ampel(){
 	
     $html.= "</div>";
 	
-    $html.= "<div style='clear:both; width: 100%;'><small>Quelle: <a href='https://experience.arcgis.com/experience/478220a4c454480e823b17327b2bf1d4'>RKI-Dashboard </a>
+    $html.= "<div id='C19afooter'><small>Quelle: <a href='https://experience.arcgis.com/experience/478220a4c454480e823b17327b2bf1d4'>RKI-Dashboard </a>
     des <a href='https://www.rki.de/DE/Home/homepage_node.html'>Robert-Koch Instituts (RKI)</a></small></div>";
 
-    $html.= "</div>";    
+	$html.= "</div>";    
 
 
 return $html;
@@ -214,7 +223,7 @@ function c19a_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_I
 			} elseif($iTendenz < 0){
 				$inzidenztext = "<img src='$c19image_pfad/Pfeil_hoch.png' style='width:64px;' alt='steigende Inzidenz'>";
 			} else {
-				$inzidenztext = "<img src='assets/Pfeil_rechts.png' style='width:64px;' alt='gleichbleibende Inzidenz'>";
+				$inzidenztext = "<img src='$c19image_pfad/Pfeil_rechts.png' style='width:64px;' alt='gleichbleibende Inzidenz'>";
 			}
 		}
 
@@ -254,7 +263,7 @@ function render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 = 165
     if ($this_incidence < $grenzwert1) {  $opacity = "1"; } else {  $opacity = $gedimmt; } 
     $html.= "<div id='ampel_gruen' class='C19Ampel_glas' style='width: 4rem; height: 4rem; border-radius: 2rem; background-color: lime; opacity: $opacity; border: 1px solid black; margin-bottom: 0.5rem;'></div>";    
     $html.= "</div>";
-    $html.= "" . round($this_incidence,2) . "<br><span style='display: inline-block; line-height: 1.2; font-size: 0.8rem; font-weight: 300;'>Fälle pro 100.000 Einwohner in 7 Tagen.</span>
+    $html.= "" . number_format($this_incidence,2,',','') . "<br><span style='display: inline-block; line-height: 1.2; font-size: 0.8rem; font-weight: 300;'>Fälle pro 100.000 Einwohner in 7 Tagen.</span>
     </div>";
 
     return $html;
@@ -413,7 +422,7 @@ function C19A_shortcodes_init(){
         $C19A_sc_action = $C19A_app_shortcodepar["show"];
 
         $debug_html = $C19A_sc_action;
-//$debug_html . 
+ 
 		return render_Corona_Ampel($C19A_sc_action);
 	}
  
@@ -422,5 +431,12 @@ function C19A_shortcodes_init(){
 add_action('init', 'C19A_shortcodes_init');
 
 register_activation_hook( __FILE__, 'C19A_install_db' );
+
+
+function C19A_register_plugin_styles() {
+    wp_register_style( 'C19Ampel_style', plugins_url( 'C19Ampel/css/c19style.css' ) );
+    wp_enqueue_style( 'C19Ampel_style' );
+}
+add_action( 'wp_enqueue_scripts', 'C19A_register_plugin_styles' );
 
 ?>
