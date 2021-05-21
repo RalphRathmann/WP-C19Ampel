@@ -9,7 +9,7 @@ Corona Ampel Settings:
 
 Find Your German Landkreis in the following pdf:
 https://github.com/RalphRathmann/WP-C19Ampel/blob/main/assets/RKI_Corona_Landkreise.pdf
-(Data from RKI-Datahub) 
+(Data from [RKI-Datahub](https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0) ) 
 
 Set the OBJECTID in the Plugin-Page (WP-Backend / C19Ampel).
 
