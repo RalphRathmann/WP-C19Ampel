@@ -1,0 +1,28 @@
+/* V1.0 */
+
+
+.C19Aframe{
+	float: left;
+}
+
+#C19Abox{
+	float: left; 
+	display: block; 
+	width: 100%;
+}
+
+#C19Atendenz{
+	margin: 2em;
+}
+
+#C19Adetailbox{
+	float: left; 
+	display: block; 
+	text-align: left; 
+	padding: 1rem;
+}
+
+#C19afooter{
+	clear:both; 
+	width: 100%;
+}
