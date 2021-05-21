@@ -7,19 +7,19 @@ Until it is available in the WordPress Plugin repository, copy these files and s
 
 Corona Ampel Settings:
 
-Besuche folgende Seite und wähle dort den anzuzeigenden Landkreis aus.
-RKI Dashboard Landkreise
+Find Your German Landkreis in the following pdf:
+https://github.com/RalphRathmann/WP-C19Ampel/blob/main/assets/RKI_Corona_Landkreise.pdf
+(Data from RKI-Datahub) 
 
-Die OBJECTID aus der linken Spalte dann im WP-Backend unter C19Ampel eintragen.
+Set the OBJECTID in the Plugin-Page (WP-Backend / C19Ampel).
 
-Einbettung:
-Das Plugin wird als Shortcode eingebunden:
+Embed with a shortcode:
 
-[C19Ampel] - Mit Standardwerten einbinden
+[C19Ampel] - standard-settings
 
-[C19Ampel show='16'] - Ampel mit Objectid 16 einbinden (Hamburg)
+[C19Ampel show='16'] - Show Ampel with Objectid 16 (Hamburg)
 
-Aufruf per GET-Parameter: wird die Ampel-Seite mit ?landkreis=NN aufgerufen, kann ein beliebiger Landkreis angezeigt werden.
-Beispiel: https://rredv.net/corona-ampel/?landkreis=16
+Call per GET-Parameter: append ?landkreis=NN to your Page-URL, to show this certain Landkreis
+E.g.: https://rredv.net/corona-ampel/?landkreis=16 shows Hamburgs incidence
 
 
