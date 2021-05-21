@@ -20,6 +20,6 @@ Das Plugin wird als Shortcode eingebunden:
 [C19Ampel show='16'] - Ampel mit Objectid 16 einbinden (Hamburg)
 
 Aufruf per GET-Parameter: wird die Ampel-Seite mit ?landkreis=NN aufgerufen, kann ein beliebiger Landkreis angezeigt werden.
-Beispiel: https://meine-beispielseite.de/corona-ampel/?landkreis=16
+Beispiel: https://rredv.net/corona-ampel/?landkreis=16
 
 
