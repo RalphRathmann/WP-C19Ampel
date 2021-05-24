@@ -6,7 +6,7 @@
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Text Domain: C19Ampel
-* Version: 0.16
+* Version: 0.17
 * License:     GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -97,11 +97,8 @@ function render_Corona_Ampel($showmode = 'all'){
 	}
 	
 	if(current_user_can('administrator')){
-		//DEBUG:
-		//
-		$html.= $showmode;
 		if(isset($showmode) && is_numeric($showmode) && $showmode > 1){
-			
+			//DEBUG: $html.= $showmode;			
 		}
 	}
 	
@@ -147,17 +144,15 @@ function render_Corona_Ampel($showmode = 'all'){
     </p>";
 
 
-	
-
-		$html.= "<br>Verlauf letzte 6 Tage:<br>";
-		$svg_width = 400;
-	
+		$html.= "<br>Verlauf letzte 5 Tage:<br>";
+		$svg_width = 310;
 		$svg_height = 200;
+		$svg_bar_steps = $svg_width / 5;
+	
 		$highest_incidence = max(array_column($aVerlauf,"incidence"));
 		if($highest_incidence > $svg_height) {$svg_height = round($highest_incidence + 20);}
 		if($grenzwert2 > $svg_height){$svg_height = round($highest_incidence + 20);}
 		$svg_text_y = $svg_height - 5;
-	
 		
 		$svg_grenzwert35 = $svg_height - 35;	//scaled: intval($svg_height - ($svg_height * 35 / 100));
 		$svg_grenzwert50 = $svg_height - 50;
@@ -177,8 +172,8 @@ function render_Corona_Ampel($showmode = 'all'){
 		$html.= "<text fill='#444' font-size='8' x='2' y='$svg_grenzwert2'>$grenzwert2</text>";					
 		
 		
-		for($iic = 5;$iic >=0 ;$iic--){
-			$svg_text_pos = $svg_width - 35 - ($iic * 65);
+		for($iic = 4;$iic >=0 ;$iic--){
+			$svg_text_pos = $svg_width - 35 - ($iic * $svg_bar_steps);
 			$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='$svg_text_y'>" . date("d.m", time() - $seconds_a_day * $iic) . " </text>";	
 			if(isset($aVerlauf[$iic]["incidence"])){
 				$this_y_pos = $svg_height - intval($aVerlauf[$iic]["incidence"]);
@@ -270,7 +265,6 @@ function render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 = 165
 }
 
 
-
 function fetch_RKI_Data($rki_objid,$days_back = 0){
 	
 		$iToday = date("Ymd"); 
@@ -282,7 +276,6 @@ function fetch_RKI_Data($rki_objid,$days_back = 0){
 			return false;	// no data for that day in history
 		}
 	
-
 		//fetch new data from rki for today:
 
 	// this part is from cT Corona-Ampel:
