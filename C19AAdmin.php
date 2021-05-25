@@ -6,7 +6,7 @@
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Text Domain: C19Ampel
-* Version: 0.17
+* Version: 0.18
 * License:     GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
