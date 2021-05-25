@@ -6,7 +6,7 @@
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Text Domain: C19Ampel
-* Version: 0.17
+* Version: 0.18
 * License:     GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -307,7 +307,11 @@ function fetch_RKI_Data($rki_objid,$days_back = 0){
         $last_update = DateTime::createFromFormat("d.m.Y, H:i", str_replace(" Uhr", "", $RKI_data['last_update']));
         $RKI_data['timestamp'] = $last_update->format("U");
 	
-        C19A_setHistory($RKI_data,$iToday);
+
+		if(idate("H") > 2){
+			C19A_setHistory($RKI_data,$iToday);	//maybe unreliable until 2 ?
+		}
+        
 	
         return $RKI_data;
 
