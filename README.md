@@ -19,7 +19,7 @@ Embed with a shortcode:
 
 [C19Ampel show='16'] - Show Ampel with Objectid 16 (Hamburg)
 
-Call per GET-Parameter: append ?landkreis=NN to your Page-URL, to show this certain Landkreis
+Call per GET-Parameter: append ?landkreis=NN to your Page-URL, to show this certain district (Landkreis)
 
 E.g.: https://rredv.net/corona-ampel/?landkreis=16 shows Hamburgs incidence
 
