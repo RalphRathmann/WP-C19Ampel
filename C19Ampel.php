@@ -6,7 +6,7 @@
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Text Domain: C19Ampel
-* Version: 0.18
+* Version: 0.19
 * License:     GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -177,7 +177,9 @@ function render_Corona_Ampel($showmode = 'all'){
 			$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='$svg_text_y'>" . date("d.m", time() - $seconds_a_day * $iic) . " </text>";	
 			if(isset($aVerlauf[$iic]["incidence"])){
 				$this_y_pos = $svg_height - intval($aVerlauf[$iic]["incidence"]);
-				$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='" . $this_y_pos . "'>" . round($aVerlauf[$iic]["incidence"]) . " </text>";	
+				
+				($this_y_pos > $svg_height - 15) ? $this_y_text_pos = $this_y_pos -14 : $this_y_text_pos = $this_y_pos;
+				$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='" . $this_y_text_pos . "'>" . round($aVerlauf[$iic]["incidence"]) . " </text>";	
 				$html.= "<rect x='$svg_text_pos' y='$this_y_pos' rx='1' ry='1' width='25' height='$svg_height' style='fill:red;stroke:black;stroke-width:1;opacity:0.4' />";
 			}
 		}
@@ -187,9 +189,6 @@ function render_Corona_Ampel($showmode = 'all'){
 	
     $html.= "</div>";
 	
-    $html.= "<div id='C19afooter'><small>Quelle: <a href='https://experience.arcgis.com/experience/478220a4c454480e823b17327b2bf1d4'>RKI-Dashboard </a>
-    des <a href='https://www.rki.de/DE/Home/homepage_node.html'>Robert-Koch Instituts (RKI)</a></small></div>";
-
 	$html.= "</div>";    
 
 
