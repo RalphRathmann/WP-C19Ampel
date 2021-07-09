@@ -39,7 +39,7 @@ global $c19a_db_version;
 $c19a_db_version = '1.0';
 
 
-require('C19AAdmin.php');
+require(plugin_dir_path( __FILE__ ) . 'C19AAdmin.php');
 
 
 function C19A_install_db(){
