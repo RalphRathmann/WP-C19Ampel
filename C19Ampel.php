@@ -2,12 +2,13 @@
 /*
 * Plugin Name: Covid19-Ampel
 * Plugin URI: https://rredv.net/WPcorona-ampel/
-* Description: German Corona-Ampel als WordPress Plugin
+* Description: German Corona-Ampel, Incidence as Value, Traffic-light and Diagram
+* Version: 1.1.20
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
-* Text Domain: C19Ampel
-* Version: 0.19
-* License:     GPLv2 or later
+* Requires at least: 5.1
+* Text Domain: wprrpi-c19ampel
+* License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 * Copyright (C) 2021 Ralph Rathmann
@@ -96,13 +97,6 @@ function render_Corona_Ampel($showmode = 'all'){
 		$rki_objid = $_GET["landkreis"];
 	}
 	
-	if(current_user_can('administrator')){
-		if(isset($showmode) && is_numeric($showmode) && $showmode > 1){
-			//DEBUG: $html.= $showmode;			
-		}
-	}
-	
-
 	$grenzwert1 = get_option( 'CA19LK_grenzwert1',100 );
 	$grenzwert2 = get_option( 'CA19LK_grenzwert2',165 );
 
