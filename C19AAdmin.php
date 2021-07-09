@@ -4,14 +4,13 @@
 */
 
 
-
 function C19A_admin_menu() {
 		add_menu_page(
 			__( 'C19 Ampel Einstellung', '' ),
 			__( 'Corona Ampel', 'C19Ampel' ),
 			'manage_options',
 			'C19ASettings',
-			'C19ASettings',
+			'C19A_C19ASettings',
 			'dashicons-schedule',
 			65
 		);
@@ -20,7 +19,7 @@ function C19A_admin_menu() {
 	add_action( 'admin_menu', 'C19A_admin_menu' );
 
 
-	function C19ASettings() {
+	function C19A_C19ASettings() {
 
     	echo "<h1>Corona Ampel Einstellungen:</h1>";
 
