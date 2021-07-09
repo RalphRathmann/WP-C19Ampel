@@ -2,7 +2,7 @@
 /*
 * Plugin Name: Covid19-Ampel
 * Plugin URI: https://rredv.net/WPcorona-ampel/
-* Description: German Corona-Ampel, Incidence as Value, Traffic-light and Diagram
+* Description: German Corona-Ampel, Incidence as Value, Traffic-light and Chart
 * Version: 1.1.20
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
@@ -82,7 +82,7 @@ function C19A_install_db(){
 }
 
 
-function render_Corona_Ampel($showmode = 'all'){
+function C19A_render_Corona_Ampel($showmode = 'all'){
 
 
     setlocale(LC_TIME, "de_DE");
@@ -103,11 +103,11 @@ function render_Corona_Ampel($showmode = 'all'){
 
 	$aRKIdaten = array();
 
-	$aRKIdaten[0] = fetch_RKI_Data($rki_objid, 0);	
+	$aRKIdaten[0] = C19A_fetch_RKI_Data($rki_objid, 0);	
 
 	$aVerlauf = array();
 	$aVerlauf = C19A_get_incidencesof_past($rki_objid,5);
-	$tendenz_img = c19a_render_tendenz($aVerlauf,$aRKIdaten[0]['cases7_per_100k'],C19A_STYLE_TENDENZ_IMG_ONLY);
+	$tendenz_img = C19A_render_tendenz($aVerlauf,$aRKIdaten[0]['cases7_per_100k'],C19A_STYLE_TENDENZ_IMG_ONLY);
 	
 
 	$html.= "<div id='C19Abox'>";
@@ -116,7 +116,7 @@ function render_Corona_Ampel($showmode = 'all'){
 	$html.= "<p>für den " . date("d.m.Y") . "</p>";    
 
     $html.= "<div class='C19Aframe'>";
-    $html.= render_tages_Ampel($aRKIdaten[0]['cases7_per_100k'], $grenzwert1,$grenzwert2);
+    $html.= C19A_render_tages_Ampel($aRKIdaten[0]['cases7_per_100k'], $grenzwert1,$grenzwert2);
 	$html.= "</div>";
 	
 	$html.= "<div id='C19Atendenz' class='C19Aframe'>";
@@ -190,7 +190,7 @@ return $html;
 		
 }
 
-function c19a_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_IMG_ONLY){
+function C19A_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_IMG_ONLY){
 	
 	if(!is_array($aVerlauf)){return false;}
 	
@@ -233,7 +233,7 @@ function c19a_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_I
 
 
 
-function render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 = 165)
+function C19A_render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 = 165)
 {
     $opacity = "0.1";
     $gedimmt = $opacity;
@@ -258,55 +258,53 @@ function render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 = 165
 }
 
 
-function fetch_RKI_Data($rki_objid,$days_back = 0){
+function C19A_fetch_RKI_Data($rki_objid,$days_back = 0){
 	
-		$iToday = date("Ymd"); 
-	
-		$RKI_data = C19A_getHistory($rki_objid, $iToday);	// we set only todays Data, other Days are fetched from our DB
-		if($RKI_data !== false){
-			return $RKI_data;	// return data from history
-		} elseif($days_back > 0) {
-			return false;	// no data for that day in history
-		}
-	
-		//fetch new data from rki for today:
+	$iToday = date("Ymd"); 
 
-	// this part is from cT Corona-Ampel:
-	// https://www.heise.de/select/ct/2021/9/2107016303143684652
-        $arcgis_uri = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=OBJECTID=';
-        $arcgis_fields = array(
-            'OBJECTID', 'GEN', 'BEZ', 'BL',
-            'cases', 'deaths',
-            'cases_per_population',
-            'cases7_per_100k', 'cases7_lk', 'death7_lk',
-            'cases7_bl_per_100k', 'cases7_bl', 'death7_bl',
-            'last_update'
-        );
+	$RKI_data = C19A_getHistory($rki_objid, $iToday);	// we set only todays Data, other Days are fetched from our DB
+	if($RKI_data !== false){
+		return $RKI_data;	// return data from history
+	} elseif($days_back > 0) {
+		return false;	// no data for that day in history
+	}
 
-        $fieldstr = implode(",", $arcgis_fields);
+	//fetch new data from rki for today:
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $arcgis_uri . $rki_objid . '&outFields=' . $fieldstr . '&returnGeometry=false&outSR=&f=json');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $RKI_result = curl_exec($curl);
-        if (curl_errno($curl)) { return false;}   //"Arcgis Server no connection"
-        curl_close($curl);
+// this part is from cT Corona-Ampel:
+// https://www.heise.de/select/ct/2021/9/2107016303143684652
+	$arcgis_uri = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=OBJECTID=';
+	$arcgis_fields = array(
+		'OBJECTID', 'GEN', 'BEZ', 'BL',
+		'cases', 'deaths',
+		'cases_per_population',
+		'cases7_per_100k', 'cases7_lk', 'death7_lk',
+		'cases7_bl_per_100k', 'cases7_bl', 'death7_bl',
+		'last_update'
+	);
 
-        $json = json_decode($RKI_result, true);
+	$fieldstr = implode(",", $arcgis_fields);
 
-        if (!isset($json['features'][0]['attributes'])) { return false; }   // no data
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $arcgis_uri . $rki_objid . '&outFields=' . $fieldstr . '&returnGeometry=false&outSR=&f=json');
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	$RKI_result = curl_exec($curl);
+	if (curl_errno($curl)) { return false;}   //"Arcgis Server no connection"
+	curl_close($curl);
 
-        $RKI_data = $json['features'][0]['attributes'];
-        $last_update = DateTime::createFromFormat("d.m.Y, H:i", str_replace(" Uhr", "", $RKI_data['last_update']));
-        $RKI_data['timestamp'] = $last_update->format("U");
-	
+	$json = json_decode($RKI_result, true);
 
-		if(idate("H") > 2){
-			C19A_setHistory($RKI_data,$iToday);	//maybe unreliable until 2 ?
-		}
-        
-	
-        return $RKI_data;
+	if (!isset($json['features'][0]['attributes'])) { return false; }   // no data
+
+	$RKI_data = $json['features'][0]['attributes'];
+	$last_update = DateTime::createFromFormat("d.m.Y, H:i", str_replace(" Uhr", "", $RKI_data['last_update']));
+	$RKI_data['timestamp'] = $last_update->format("U");
+
+	if(idate("H") > 2){
+		C19A_setHistory($RKI_data,$iToday);	//maybe unreliable until 2 ?
+	}
+
+	return $RKI_data;
 
 }
 
@@ -401,11 +399,11 @@ function C19A_setHistory($RKI_data,$iToday){
 
 //-----------------------------------------------------------------------------------------------
 
-add_shortcode( 'C19Ampel', 'C19Ampel' );
+add_shortcode( 'C19Ampel', 'C19A_C19Ampel' );
 
 function C19A_shortcodes_init(){
 
-	function C19Ampel($atts = [], $content = null, $tag = ''){
+	function C19A_C19Ampel($atts = [], $content = null, $tag = ''){
 
 		$C19A_app_shortcodepar = shortcode_atts(array("show" => "all"),$atts,$tag);
 
@@ -413,7 +411,7 @@ function C19A_shortcodes_init(){
 
         $debug_html = $C19A_sc_action;
  
-		return render_Corona_Ampel($C19A_sc_action);
+		return C19A_render_Corona_Ampel($C19A_sc_action);
 	}
  
 }
@@ -424,7 +422,7 @@ register_activation_hook( __FILE__, 'C19A_install_db' );
 
 
 function C19A_register_plugin_styles() {
-    wp_register_style( 'C19Ampel_style', plugins_url( 'C19Ampel/css/c19style.css' ) );
+    wp_register_style( 'C19Ampel_style', plugin_dir_url( __FILE__ ) . 'css/c19style.css' );
     wp_enqueue_style( 'C19Ampel_style' );
 }
 add_action( 'wp_enqueue_scripts', 'C19A_register_plugin_styles' );
