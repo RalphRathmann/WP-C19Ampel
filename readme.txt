@@ -1,15 +1,16 @@
 # WP-C19Ampel #
 * Contributor: Ralph Rathmann
-* Requires at least: 4.5
-* License:           GPLv2 or later
-* License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+* Requires at least: 5.1.0
+* Tested up to: 5.7.2
+* Stable tag: 1.1.20
+* License:  GPLv2 or later
+* License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 
 
 ## Description ##
 
-Wordpress-Plugin to show Cov19-incidences from RKI for german regions (Landkreise) as traffic-light and more
+Wordpress-Plugin to show Cov19-incidences from RKI for german districts (Landkreise) as traffic-light, as value and history chart
 
-Until it is available in the WordPress Plugin repository, copy these files and subfolders to Your WordPress-Plugin Directory as subfolder "C19Ampel"
 
 ### Corona Ampel Settings: ###
 
