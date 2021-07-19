@@ -1,9 +1,67 @@
-/* V1.0 */
+/* V1.1 */
 
 
 .C19Aframe{
 	float: left;
 }
+
+.c19a-settings{
+	border: 1px solid green; 
+	border-radius: 1em; 
+	padding: 1em; margin: 1em;
+}
+.c19a-ampel-glas{
+	width: 4rem; 
+	height: 4rem; 
+	border-radius: 2rem;	
+	border: 1px solid black; 
+	margin-bottom: 0.5rem;
+}
+.c19a-arrow{
+	width:64px;	
+}
+
+.c19a-inline-info{
+	display: inline-block; 
+	line-height: 1.2; 
+	font-size: 0.8rem; 
+	font-weight: 300;
+}
+
+.c19a-small-info{
+	display: inline-block; 
+	line-height: 1.2; 
+	font-size: 1rem; 
+	font-weight: 300;
+}
+
+#c19a-ampel-housing{
+	width: 5rem; 
+	height: 15rem; 
+	margin: 1rem 1.5rem; 
+	background-color: #555; 
+	border: 2px solid black; 
+	border-radius: 0.5rem; 
+	padding: 0.4rem;	
+} 
+
+#c19a-ampel-inzidenzwert{
+	width: 8rem; 
+	text-align: center; 
+	font-size: 2.5rem; 
+	font-weight: 700;
+}
+
+#c19a-ampel-rot{
+	background-color: red;
+} 
+#c19a-ampel-gelb{
+	background-color: yellow;
+} 
+#c19a-ampel-gruen{
+	background-color: lime;
+} 
+
 
 #C19Abox{
 	float: left; 
@@ -15,11 +73,22 @@
 	margin: 2em;
 }
 
+#c19a-incidence-tendenz{
+	width:200px; 
+	height: 200px; 
+	background-color: silver;
+}
+
 #C19Adetailbox{
 	float: left; 
 	display: block; 
 	text-align: left; 
 	padding: 1rem;
+}
+
+#c19a-svg-chart{
+	border: 1px solid gray; 
+	background-color: white;
 }
 
 #C19afooter{
