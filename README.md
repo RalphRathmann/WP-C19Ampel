@@ -1,8 +1,8 @@
 # WP-C19Ampel #
 * Contributor: Ralph Rathmann
 * Requires at least: 5.1.0
-* Tested up to: 5.7.2
-* Stable tag: 1.1.21
+* Tested up to: 5.8
+* Stable tag: 1.1.22
 * License:  GPLv2 or later
 * License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,11 @@ E.g.: https://rredv.net/corona-ampel/?landkreis=16 shows Hamburgs incidence
 
 
 ## Changelog: ##
+
+V1.1.22: 
+- hardening int
+- minor design changes to the chart (behaviour of values above / inside bars)
+- additional information for "early birds" in early morning hours, who view the site befor data are available for today
 
 V1.1.21:
 
