@@ -40,6 +40,11 @@ E.g.: https://rredv.net/corona-ampel/?landkreis=16 shows Hamburgs incidence
 
 ## Changelog: ##
 
+V1.1.22: 
+- hardening int
+- minor design changes to the chart (behaviour of values above / inside bars)
+- additional information for "early birds" in early morning hours, who view the site befor data are available for today
+
 V1.1.21:
 
 - use of wordpress integrated functions to call external rest-api
