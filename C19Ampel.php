@@ -3,7 +3,7 @@
 * Plugin Name: Covid19-Ampel
 * Plugin URI: https://rredv.net/WPcorona-ampel/
 * Description: German Corona-Ampel, Incidence as Value, Traffic-light and Chart
-* Version: 1.1.21
+* Version: 1.1.22
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Requires at least: 5.1
@@ -34,6 +34,7 @@ defined( 'ABSPATH' ) || exit;
 
 define("C19A_STYLE_TENDENZ_IMG_ONLY", 1);
 define("C19A_STYLE_TENDENZ_DIV", 2);
+define("C19A_RKI_RELIABLE_AFTER", 5);	//before 5AM, RKI Data are not stable
 
 global $c19a_db_version;
 $c19a_db_version = '1.1';
@@ -50,7 +51,7 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 	
 	//Pinneberg https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0/data?geometry=-30.805%2C46.211%2C52.823%2C55.839&selectedAttribute=cases7_lk
 	if(isset($_GET["landkreis"]) && is_numeric($_GET["landkreis"])){
-		$rki_objid = $_GET["landkreis"];
+		$rki_objid = intval($_GET["landkreis"]);
 	} else {
 		$rki_objid = get_option( 'C19ALK_ID',9);			
 	}
@@ -106,7 +107,7 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 		$highest_incidence = max(array_column($aVerlauf,"incidence"));
 		if($highest_incidence > $svg_height) {$svg_height = round($highest_incidence + 20);}
 		if($grenzwert2 > $svg_height){$svg_height = round($highest_incidence + 20);}
-		$svg_text_y = $svg_height - 5;
+		$svg_text_y = $svg_height - 2;
 		
 		$svg_grenzwert35 = $svg_height - 35;	//scaled: intval($svg_height - ($svg_height * 35 / 100));
 		$svg_grenzwert50 = $svg_height - 50;
@@ -135,7 +136,7 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 			if(isset($aVerlauf[$iic]["incidence"])){
 				$this_y_pos = $svg_height - intval($aVerlauf[$iic]["incidence"]);
 				
-				($this_y_pos > $svg_height - 15) ? $this_y_text_pos = $this_y_pos -14 : $this_y_text_pos = $this_y_pos;
+				($this_y_pos > $svg_height - 100) ? $this_y_text_pos = $this_y_pos -6 : $this_y_text_pos = $this_y_pos + 10;
 				$html.= "<text fill='#000' font-size='10' x='$svg_text_pos' y='" . $this_y_text_pos . "'>" . round($aVerlauf[$iic]["incidence"]) . " </text>";	
 				$html.= "<rect x='$svg_text_pos' y='$this_y_pos' rx='1' ry='1' width='25' height='$svg_height' style='fill:red;stroke:black;stroke-width:1;opacity:0.4' />";
 			}
@@ -149,6 +150,9 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 
 	if ($show_counter == true){
 		$html.= "<div id='c19a-counter' class='c19a-small-info'>Aufrufe: " .  $visits . "</div>";			
+	}
+	if( date_i18n("G",current_time('timestamp')) < C19A_RKI_RELIABLE_AFTER){
+		$html.= "<div class='c19a-small-info'>Die Daten stehen evtl. noch nicht vollständig zur Verfügung!</div>";
 	}
 	
 return $html;
@@ -259,8 +263,8 @@ function C19A_fetch_RKI_Data($rki_objid,$days_back = 0){
 	$last_update = DateTime::createFromFormat("d.m.Y, H:i", str_replace(" Uhr", "", $RKI_data['last_update']));
 	$RKI_data['timestamp'] = $last_update->format("U");
 
-	if(idate("H") > 3){
-		C19A_setHistory($RKI_data,$iToday);	//RKI-Data are maybe unreliable before 3AM
+	if(date_i18n("G",current_time('timestamp')) < C19A_RKI_RELIABLE_AFTER){
+		C19A_setHistory($RKI_data,$iToday);	//RKI-Data are maybe unreliable before
 	}
 
 	return $RKI_data;
