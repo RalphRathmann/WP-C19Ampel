@@ -115,7 +115,7 @@ function C19A_admin_menu() {
 
         echo "</form></div>";
 
-        echo "<br><div><small>Das Plugin ist auf Basis des Informationsstandes vom 02.07.2021 erstellt worden.<br>DB-Version: " . get_option( 'c19a_db_version') . "</small></div>";
+        echo "<br><div><small>Das Plugin ist auf Basis des Informationsstandes vom 15.07.2021 erstellt worden.<br>DB-Version: " . get_option( 'c19a_db_version') . "</small></div>";
 	    
 
 	}
