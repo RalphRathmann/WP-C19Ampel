@@ -2,7 +2,7 @@
 * Contributor: Ralph Rathmann
 * Requires at least: 5.1.0
 * Tested up to: 5.8
-* Stable tag: 1.1.22
+* Stable tag: 1.1.23
 * License:  GPLv2 or later
 * License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,10 @@ E.g.: https://rredv.net/corona-ampel/?landkreis=16 shows Hamburgs incidence
 
 
 ## Changelog: ##
+
+V1.1.23:
+- bug fix: behaviour of saving incidences before RKI-Data are stable (5:00AM)
+- getoptions and external urls escaped
 
 V1.1.22: 
 - hardening int
