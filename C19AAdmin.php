@@ -92,16 +92,16 @@ function C19A_admin_menu() {
     	echo "<h1>Corona Ampel Einstellungen:</h1>";
 
         echo "<div>
-        <p>Besuche bitte die folgende Seite und wähle dort den anzuzeigenden Landkreis aus.
-        <br><a href='https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0/data?geometry=-30.805%2C46.211%2C52.823%2C55.839&selectedAttribute=cases7_lk' target=_blank>RKI Dashboard Landkreise</a>
-		<br><a href='https://github.com/RalphRathmann/WP-C19Ampel/blob/main/assets/RKI_Corona_Landkreise.pdf' target=_blank>RKI-OBJECTID Landkreise als PDF</a>
+        <p>Besuchen Sie bitte die folgende Seite und wählen dort den anzuzeigenden Landkreis aus.<br><a href='" .
+        esc_url("https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0/data?geometry=-30.805%2C46.211%2C52.823%2C55.839&selectedAttribute=cases7_lk") ."' target=_blank>RKI Dashboard Landkreise</a><br><a href='" . 
+		esc_url("https://github.com/RalphRathmann/WP-C19Ampel/blob/main/assets/RKI_Corona_Landkreise.pdf") . "' target=_blank>RKI-OBJECTID Landkreise als PDF</a>
         <br><p>Die OBJECTID aus der linken Spalte dann hier im untenstehenden Formular als Landkreis-ID eintragen.</p>
 		<h3>Einbettung:</h3>
 		<p>Das Plugin wird als Shortcode eingebunden:</p>
 		<p>[C19Ampel] - Mit Standardwerten einbinden</p>
 		<p>[C19Ampel show='16'] - Ampel mit Objectid 16 einbinden (Hamburg)</p>
 		<p>Aufruf per GET-Parameter: wird die Ampel-Seite mit <code>?landkreis=NN</code> aufgerufen, kann ein beliebiger Landkreis angezeigt werden.<br>
-		Beispiel: <code>https://meine-beispielseite.de/corona-ampel/?landkreis=16</code>
+		Beispiel: <code>" . esc_url("https://meine-beispielseite.de/corona-ampel/?landkreis=16") . "</code>
 		</p>
         </div>";
 
@@ -115,7 +115,7 @@ function C19A_admin_menu() {
 
         echo "</form></div>";
 
-        echo "<br><div><small>Das Plugin ist auf Basis des Informationsstandes vom 15.07.2021 erstellt worden.<br>DB-Version: " . get_option( 'c19a_db_version') . "</small></div>";
+        echo "<br><div><small>Das Plugin ist auf Basis des Informationsstandes vom 15.07.2021 erstellt worden.<br>DB-Version: " . esc_html(get_option( 'c19a_db_version')) . "</small></div>";
 	    
 
 	}
@@ -200,22 +200,22 @@ function C19A_admin_menu() {
     
     function C19ALK_ID_setting_markup() {
         echo "<label for='C19ALK_ID'>Geben Sie Ihren Landkreis als ID ein:</label><br><br>
-        <input type='number' id='C19ALK_ID' name='C19ALK_ID' value='" . get_option( 'C19ALK_ID' ) . "'><br><br>";
+        <input type='number' id='C19ALK_ID' name='C19ALK_ID' value='" . intval(get_option( 'C19ALK_ID' )) . "'><br><br>";
     }
 
     function C19ALK_grenzwert1_setting_markup() {
         echo "<label for='C19ALK_grenzwert1'>Geben Sie den Grenzwert für Schliessungen ein, also ab wann springt die Ampel auf Rot:</label><br><br>
-        <input type='number' id='C19ALK_grenzwert1' name='C19ALK_grenzwert1' value='" . get_option( 'C19ALK_grenzwert1' ) . "'><br><br>";
+        <input type='number' id='C19ALK_grenzwert1' name='C19ALK_grenzwert1' value='" . intval(get_option( 'C19ALK_grenzwert1' )) . "'><br><br>";
     }
 
     function C19ALK_grenzwert2_setting_markup() {
         echo "<label for='C19ALK_grenzwert2'>Geben Sie den Grenzwert 2 für weitere Maßnahmen / Schliessungen ein:</label><br><br>
-        <input type='number' id='C19ALK_grenzwert2' name='C19ALK_grenzwert2' value='" . get_option( 'C19ALK_grenzwert2' ) . "'><br><br>";
+        <input type='number' id='C19ALK_grenzwert2' name='C19ALK_grenzwert2' value='" . intval(get_option( 'C19ALK_grenzwert2' )) . "'><br><br>";
     }
 
     function C19A_days_back_setting_markup() {
         echo "<label for='C19A_days_back'>Anzahl Tage in Chart:</label><br><br>
-        <input type='number' id='C19A_days_back' name='C19A_days_back' value='" . get_option( 'C19A_days_back' ,5 ) . "'><br><br>";
+        <input type='number' id='C19A_days_back' name='C19A_days_back' value='" . intval(get_option( 'C19A_days_back' ,5 )) . "'><br><br>";
     }
 
     function C19A_show_counter_setting_markup() {
