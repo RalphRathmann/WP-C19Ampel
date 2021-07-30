@@ -3,7 +3,6 @@
 * Admin-Backend:
 */
 
-
 function C19A_install_db(){
 
 	// thanks to https://codex.wordpress.org/Creating_Tables_with_Plugins
