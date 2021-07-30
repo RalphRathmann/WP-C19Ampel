@@ -3,7 +3,7 @@
 * Plugin Name: Covid19-Ampel
 * Plugin URI: https://rredv.net/WPcorona-ampel/
 * Description: German Corona-Ampel, Incidence as Value, Traffic-light and Chart
-* Version: 1.1.22
+* Version: 1.1.23
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Requires at least: 5.1
@@ -34,7 +34,7 @@ defined( 'ABSPATH' ) || exit;
 
 define("C19A_STYLE_TENDENZ_IMG_ONLY", 1);
 define("C19A_STYLE_TENDENZ_DIV", 2);
-define("C19A_RKI_RELIABLE_AFTER", 5);	//before 5AM, RKI Data are not stable
+define("C19A_RKI_RELIABLE_AFTER", 5);	//until 5AM, RKI Data are not stable
 
 global $c19a_db_version;
 $c19a_db_version = '1.1';
@@ -53,13 +53,15 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 	if(isset($_GET["landkreis"]) && is_numeric($_GET["landkreis"])){
 		$rki_objid = intval($_GET["landkreis"]);
 	} else {
-		$rki_objid = get_option( 'C19ALK_ID',9);			
+		$rki_objid = intval(get_option( 'C19ALK_ID',9));			
 	}
 	
-	$grenzwert1 = get_option( 'C19ALK_grenzwert1',100 );
-	$grenzwert2 = get_option( 'C19ALK_grenzwert2',165 );
-	$days_back = get_option( 'C19A_days_back',5 );
-	$show_counter = get_option( 'C19A_show_counter',true );
+	$grenzwert1 = intval(get_option( 'C19ALK_grenzwert1',100 ));
+	$grenzwert2 = intval(get_option( 'C19ALK_grenzwert2',165 ));
+	$days_back = intval(get_option( 'C19A_days_back',5 ));
+	$show_counter = false; if (get_option( 'C19A_show_counter',true ) == true){$show_counter = true;}
+
+	
 
 	$aRKIdaten = array();
 
@@ -73,6 +75,8 @@ function C19A_render_Corona_Ampel($showmode = 'all'){
 
 	$html.= "<div id='C19Abox'>";
 
+	//var_dump($show_counter);	
+	
     $html.= "<h3>Inzidenz-Ampel " . $aRKIdaten[0]['BEZ'] . " " . $aRKIdaten[0]['GEN'] . "</h3>";
 	$html.= "<p>für den " . date("d.m.Y") . "</p>";    
 
@@ -173,7 +177,7 @@ function C19A_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_I
 	foreach($aVerlauf AS $past_incid){
 		$iCounter++;
 		if($iCounter == 2){
-			$yesterdays_incid = $past_incid["incidence"];
+			$yesterdays_incid = floatval($past_incid["incidence"]);
 			$iTendenz = round($yesterdays_incid - $todays_incid); 
 			if($iTendenz > 0){
 				$inzidenztext = "<img src='$c19image_pfad/Pfeil_runter.png' class='c19a-arrow' alt='sinkende Inzidenz'>";
@@ -185,7 +189,7 @@ function C19A_render_tendenz($aVerlauf,$todays_incid,$style=C19A_STYLE_TENDENZ_I
 		}
 
 		if($style > C19A_STYLE_TENDENZ_IMG_ONLY){
-			$html.= "<br>" . substr($past_incid["last_update"],0,5) . " " . $past_incid["incidence"];
+			$html.= "<br>" . esc_html(substr($past_incid["last_update"],0,5) . " " . $past_incid["incidence"]);
 			$html.= "<br>" . $inzidenztext;
 		}
 
@@ -220,7 +224,7 @@ function C19A_render_tages_Ampel($this_incidence, $grenzwert1 = 100,$grenzwert2 
     if ($this_incidence < $grenzwert1) {  $opacity = "1"; } else {  $opacity = $gedimmt; } 
     $html.= "<div id='c19a-ampel-gruen' class='c19a-ampel-glas' style='opacity: $opacity;'></div>";    
     $html.= "</div>";
-    $html.= "" . number_format($this_incidence,2,',','') . "<br><span class='c19a-inline-info'>Fälle pro 100.000 Einwohner in 7 Tagen.</span>
+    $html.= esc_html(number_format($this_incidence,2,',','')) . "<br><span class='c19a-inline-info'>Fälle pro 100.000 Einwohner in 7 Tagen.</span>
     </div>";
 
     return $html;
@@ -238,6 +242,7 @@ function C19A_fetch_RKI_Data($rki_objid,$days_back = 0){
 		return false;	// no data for that day in history
 	}
 
+	
 	//fetch new data from rki for today:
 	$arcgis_uri = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=OBJECTID=';
 	$arcgis_fields = array(
@@ -247,24 +252,34 @@ function C19A_fetch_RKI_Data($rki_objid,$days_back = 0){
 
 	$fieldstr = implode(",", $arcgis_fields);
 
+	
 	$rki_response = wp_remote_get( $arcgis_uri . $rki_objid . '&outFields=' . $fieldstr . '&returnGeometry=false&outSR=&f=json' );
 	$rki_http_code = wp_remote_retrieve_response_code( $rki_response );	
 	if ($rki_http_code !== 200){
 		echo "<h2>Arcgis-Server nicht erreichbar: " . $rki_http_code . "</h2>";
 		return false;
 	}
+	
 	$RKI_result = wp_remote_retrieve_body( $rki_response );
 	
 	$json = json_decode($RKI_result, true);
 
-	if (!isset($json['features'][0]['attributes'])) { return false; }   // no data
+	if (!isset($json['features'][0]['attributes'])) { 
+		// no data
+		echo "<h4>Server erreicht, aber keine Daten erhalten.</h4>";		
+		return false; 
+	}   
 
+	
+	
 	$RKI_data = $json['features'][0]['attributes'];
 	$last_update = DateTime::createFromFormat("d.m.Y, H:i", str_replace(" Uhr", "", $RKI_data['last_update']));
 	$RKI_data['timestamp'] = $last_update->format("U");
 
-	if(date_i18n("G",current_time('timestamp')) < C19A_RKI_RELIABLE_AFTER){
+	if(date_i18n("G",current_time('timestamp')) > C19A_RKI_RELIABLE_AFTER){
 		C19A_setHistory($RKI_data,$iToday);	//RKI-Data are maybe unreliable before
+	} else {
+		echo "<h4>RKI-Server erreicht und Daten erhalten, aber vor " . C19A_RKI_RELIABLE_AFTER . " Uhr sind die Daten noch unzuverlässig.</h4>";		
 	}
 
 	return $RKI_data;
@@ -375,8 +390,6 @@ function C19A_setandgetCounter($rki_objectid){
 	$querystring = "SELECT visits FROM " . $table . " WHERE objectid = $rki_objectid AND date = '" . $iToday . "' LIMIT 1";
 	$result = $wpdb->get_results($querystring);	
 	
-	// array(1) { [0]=> object(stdClass)#7452 (1) { ["visits"]=> string(1) "2" } }    var_dump($result);
-
 	if(!is_array($result) || count($result) < 1){
 		return false;	//nothing found
 	}
@@ -432,7 +445,7 @@ add_action( 'c19a_ampel_cron_hook', 'C19A_daily_fetch_per_cron' );
 function C19A_daily_fetch_per_cron() {
 	// try to make shure the call at least once a day
 	// gets it from local database on subsequent calls to prevent from abuse of external ressources
-	$rki_objid = get_option( 'C19ALK_ID',9);	
+	$rki_objid = intval(get_option( 'C19ALK_ID',9));	
 	$aRKIdaten = array();
 	$aRKIdaten[0] = C19A_fetch_RKI_Data($rki_objid, 0);	
 
