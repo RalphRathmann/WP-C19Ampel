@@ -3,7 +3,7 @@
 * Plugin Name: Covid19-Ampel
 * Plugin URI: https://rredv.net/WPcorona-ampel/
 * Description: German Corona-Ampel, Incidence as Value, Traffic-light and Chart
-* Version: 1.1.23
+* Version: 1.1.24
 * Author: Ralph Rathmann
 * Author URI: https://rredv.net/
 * Requires at least: 5.1
@@ -256,7 +256,7 @@ function C19A_fetch_RKI_Data($rki_objid,$days_back = 0){
 	$rki_response = wp_remote_get( $arcgis_uri . $rki_objid . '&outFields=' . $fieldstr . '&returnGeometry=false&outSR=&f=json' );
 	$rki_http_code = wp_remote_retrieve_response_code( $rki_response );	
 	if ($rki_http_code !== 200){
-		echo "<h2>Arcgis-Server nicht erreichbar: " . $rki_http_code . "</h2>";
+		echo "<h2>Arcgis-Server nicht erreichbar</h2>";
 		return false;
 	}
 	
